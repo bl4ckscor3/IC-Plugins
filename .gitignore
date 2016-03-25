@@ -1,0 +1,18 @@
+# Ignore everything
+*
+
+# But include these folders
+!*IC-*
+!*IC-*/*
+!*IC-*/*/*
+!*IC-*/*/*/*
+!*IC-*/*/*/*/*
+!*IC-*/*/*/*/*/*
+!.gitignore
+
+# And exclude these again
+
+**/.settings
+**/.classpath
+**/.project
+**/bin

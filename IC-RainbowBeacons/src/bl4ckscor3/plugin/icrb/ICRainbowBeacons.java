@@ -28,10 +28,9 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 	@EventHandler
 	public void onBlockRedstone(BlockRedstoneEvent event)
 	{
-		Block b = event.getBlock();
 		Block beacon;
 		
-		if((beacon = b.getRelative(0, 2, 0)).getType() == Material.BEACON)
+		if((beacon = event.getBlock().getRelative(0, 2, 0)).getType() == Material.BEACON)
 		{
 			if(event.getNewCurrent() > 0)
 			{

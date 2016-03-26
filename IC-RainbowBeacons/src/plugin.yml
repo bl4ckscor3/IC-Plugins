@@ -1,5 +1,5 @@
 name: IC-RainbowBeacons
-main: bl4ckscor3.plugin.icrb
+main: bl4ckscor3.plugin.icrb.ICRainbowBeacons
 version: 0.1
 author: [bl4ckscor3]
 description: Adds Rainbow Beacons!

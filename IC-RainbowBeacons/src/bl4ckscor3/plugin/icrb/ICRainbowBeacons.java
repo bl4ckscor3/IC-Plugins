@@ -30,6 +30,7 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 	private static final HashMap<Integer,Block> activeBeacons = new HashMap<Integer,Block>(); //beacon, task id
 	private static final HashMap<Player,String> waiting = new HashMap<Player,String>(); //player, adding or removing a beacon
 	private static boolean running = false;
+	private static final int tickSpeed = 2; //how fast the beacon's color changes
 	private static ICRainbowBeacons instance;
 
 	@Override
@@ -60,113 +61,86 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 					{
 						case "add":
 							waiting.put(p, "add");
-							p.sendMessage(prefix + "Please rightclick the beacon you want to add.");
+							sendMessage(p, "Please rightclick the beacon you want to add.");
 							break;
 						case "remove":
 							waiting.put(p, "remove");
-							p.sendMessage(prefix + "Please rightclick the beacon you want to remove.");
+							sendMessage(p, "Please rightclick the beacon you want to remove.");
 							break;
 						case "abort":
 							waiting.remove(p);
-							p.sendMessage(prefix + "You are no longer modifying the beacons.");
+							sendMessage(p, "You are no longer modifying the beacons.");
 							break;
 						case "start":
 							if(!running)
 							{
-								File folder = new File(getDataFolder(), "storage");
-								File f = new File(getDataFolder(), "storage/beacons.txt");
-								
-								if(!folder.exists())
-									folder.mkdirs();
-
-								if(!f.exists())
-									f.createNewFile();
-								
-								List<String> content = FileUtils.readLines(f);
+								List<String> content = getContent();
 
 								if(content.size() == 0)
 								{
-									p.sendMessage(prefix + "There are no rainbow beacons.");
+									sendMessage(p, "There are no rainbow beacons.");
 									return true;
 								}
-								
+
 								for(String s : content)
 								{
 									Location l = getSavedAsLocation(s);
-									BeaconRunnable r = new BeaconRunnable(l.getWorld().getBlockAt(l));
+									Block b = l.getWorld().getBlockAt(l);
 
-									r.runTaskTimer(this, 0, 1);
-									activeBeacons.put(r.getTaskId(), r.b);
+									if(!isBeacon(b, p))
+										continue;
+
+									start(b);
 								}
 
 								running = true;
-								p.sendMessage(prefix + "The rainbow beacons have been started.");
+								sendMessage(p, "The rainbow beacons have been started.");
 							}
 							else
-								p.sendMessage(prefix + "The rainbow beacons are already running.");
-							
+								sendMessage(p, "The rainbow beacons are already running.");
+
 							break;
 						case "stop":
 							if(running)
 							{
-								for(int i : activeBeacons.keySet())
-								{
-									getServer().getScheduler().cancelTask(i);
-									setBlockAbove(activeBeacons.get(i), 1, 0);
-									setBlockAbove(activeBeacons.get(i), 2, 0);
-									setBlockAbove(activeBeacons.get(i), 3, 0);
-								}
-
+								stopBeacons();
 								running = false;
-								p.sendMessage(prefix + "The rainbow beacons have been stopped.");
+								sendMessage(p, "The rainbow beacons have been stopped.");
 							}
 							else
-								p.sendMessage(prefix + "The rainbow beacons aren't running.");
-							
+								sendMessage(p, "The rainbow beacons aren't running.");
+
 							break;
 						case "restart":
 							if(running)
 							{
-								for(int i : activeBeacons.keySet())
-								{
-									getServer().getScheduler().cancelTask(i);
-									setBlockAbove(activeBeacons.get(i), 1, 0);
-									setBlockAbove(activeBeacons.get(i), 2, 0);
-									setBlockAbove(activeBeacons.get(i), 3, 0);
-								}
-
-								File folder = new File(getDataFolder(), "storage");
-								File f = new File(getDataFolder(), "storage/beacons.txt");
+								stopBeacons();
 								
-								if(!folder.exists())
-									folder.mkdirs();
-
-								if(!f.exists())
-									f.createNewFile();
-
-								List<String> content = FileUtils.readLines(f);
+								List<String> content = getContent();
 
 								for(String s : content)
 								{
 									Location l = getSavedAsLocation(s);
-									BeaconRunnable r = new BeaconRunnable(l.getWorld().getBlockAt(l));
+									Block b = l.getWorld().getBlockAt(l);
 
-									r.runTaskTimer(this, 0, 1);
-									activeBeacons.put(r.getTaskId(), r.b);
+									if(!isBeacon(b, p))
+										continue;
+
+									start(b);
 								}
 
-								p.sendMessage(prefix + "The rainbow beacons have been restarted.");
+								sendMessage(p, "The rainbow beacons have been restarted.");
 							}
 							else
-								p.sendMessage(prefix + "The rainbow beacons aren't running.");
-							
+								sendMessage(p, "The rainbow beacons aren't running.");
+
 							break;
 						default:
-							p.sendMessage(prefix + "Correct usage: /rb <add|abort|remove|start|stop|restart>");
+							sendMessage(p, "Correct usage: /rb <add|abort|remove|start|stop|restart>");
 					}
 				}
 				else
-					p.sendMessage(prefix + "Correct usage: /rb <add|abort|remove|start|stop|restart>");
+					sendMessage(p, "Correct usage: /rb <add|abort|remove|start|stop|restart>");
 			}
 		}
 		catch(Exception e){}
@@ -188,16 +162,7 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 
 					if(b.getType() == Material.BEACON)
 					{
-						File folder = new File(getDataFolder(), "storage");
-						File f = new File(getDataFolder(), "storage/beacons.txt");
-						
-						if(!folder.exists())
-							folder.mkdirs();
-
-						if(!f.exists())
-							f.createNewFile();
-
-						List<String> content = FileUtils.readLines(f);
+						List<String> content = getContent();
 						String loc = getLocationAsSaved(b.getLocation());
 
 						switch(waiting.get(p))
@@ -205,33 +170,33 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 							case "add":
 								if(content.contains(loc))
 								{
-									p.sendMessage(prefix + "This beacon is already a rainbow beacon.");
+									sendMessage(p, "This beacon is already a rainbow beacon.");
 									event.setCancelled(true);
 									return;
 								}
 
 								content.add(loc);
-								FileUtils.writeLines(f, content);
-								p.sendMessage(prefix + "Beacon added. Use " + ChatColor.AQUA + "/rb " + (running ? "restart" : "start") + ChatColor.WHITE + " to activate it.");
+								FileUtils.writeLines(getContentFile(), content);
+								sendMessage(p, "Beacon added. Use " + ChatColor.AQUA + "/rb " + (running ? "restart" : "start") + ChatColor.WHITE + " to activate it.");
 								break;
 							case "remove":
 								if(!content.contains(loc))
 								{
-									p.sendMessage(prefix + "This beacon isn't a rainbow beacon.");
+									sendMessage(p, "This beacon isn't a rainbow beacon.");
 									event.setCancelled(true);
 									return;
 								}
 
 								content.remove(loc);
-								FileUtils.writeLines(f, content);
-								p.sendMessage(prefix + "Beacon removed." + (running ? " Use " + ChatColor.AQUA + "/rb restart" + ChatColor.WHITE + " to deactivate it." : ""));
+								FileUtils.writeLines(getContentFile(), content);
+								sendMessage(p, "Beacon removed." + (running ? " Use " + ChatColor.AQUA + "/rb restart" + ChatColor.WHITE + " to deactivate it." : ""));
 								break;
 						}
 
 						waiting.remove(p);
 					}
 					else
-						p.sendMessage(prefix + "This is not a beacon.");
+						sendMessage(p, "This is not a beacon.");
 
 					event.setCancelled(true);
 				}
@@ -246,52 +211,37 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 	{
 		if(getServer().getOnlinePlayers().size() == 1 && !running)
 		{
-			File folder = new File(getDataFolder(), "storage");
-			File f = new File(getDataFolder(), "storage/beacons.txt");
-			
-			if(!folder.exists())
-				folder.mkdirs();
-
-			if(!f.exists())
-				f.createNewFile();
-			
-			List<String> content = FileUtils.readLines(f);
+			List<String> content = getContent();
 
 			if(content.size() == 0)
 				return;
-			
+
 			for(String s : content)
 			{
 				Location l = getSavedAsLocation(s);
-				BeaconRunnable r = new BeaconRunnable(l.getWorld().getBlockAt(l));
+				Block b = l.getWorld().getBlockAt(l);
 
-				r.runTaskTimer(this, 0, 5);
-				activeBeacons.put(r.getTaskId(), r.b);
+				if(b.getType() != Material.BEACON)
+					continue;
+
+				start(b);
 			}
 
 			running = true;
 		}
 	}
-	
+
 	//stopping the beacons once the last player leaves
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) throws IOException
 	{
 		if(getServer().getOnlinePlayers().size() == 0 && running)
 		{
-			for(int i : activeBeacons.keySet())
-			{
-				getServer().getScheduler().cancelTask(i);
-				activeBeacons.remove(i);
-				setBlockAbove(activeBeacons.get(i), 1, 0);
-				setBlockAbove(activeBeacons.get(i), 2, 0);
-				setBlockAbove(activeBeacons.get(i), 3, 0);
-			}
-
+			stopBeacons();
 			running = false;
 		}
 	}
-	
+
 	public class BeaconRunnable extends BukkitRunnable implements BukkitTask
 	{
 		private Block b;
@@ -487,5 +437,87 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 		String[] split = s.split(",");
 
 		return new Location(getServer().getWorld(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+	}
+
+	/**
+	 * Starts a beacon
+	 * @param b The beacon to start. Should be checked if it's a beacon before calling this method
+	 */
+	private void start(Block b)
+	{
+		BeaconRunnable r = new BeaconRunnable(b);
+
+		r.runTaskTimer(this, 0, tickSpeed);
+		activeBeacons.put(r.getTaskId(), r.b);
+	}
+
+	/**
+	 * Stops all beacons
+	 */
+	private void stopBeacons()
+	{
+		for(int i : activeBeacons.keySet())
+		{
+			getServer().getScheduler().cancelTask(i);
+			setBlockAbove(activeBeacons.get(i), 1, 0);
+			setBlockAbove(activeBeacons.get(i), 2, 0);
+			setBlockAbove(activeBeacons.get(i), 3, 0);
+			activeBeacons.remove(i);
+		}
+	}
+
+	/**
+	 * Checks if the given block is a beacon and sends a message if not
+	 * @param b The block to check
+	 * @param p The player to send the message to
+	 * @return true if it's a beacon, false if not
+	 */
+	private boolean isBeacon(Block b, Player p)
+	{
+		if(b.getType() != Material.BEACON)
+		{
+			String[] split = getLocationAsSaved(b.getLocation()).split(",");
+
+			sendMessage(p, "The beacon at" + ChatColor.AQUA + " X:" + split[1] + " Y:" + split[2] + " Z:" + split[3] + ChatColor.WHITE + " does not exist anymore.");
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the content of the beacons.txt file
+	 * @return The content
+	 */
+	private List<String> getContent() throws IOException
+	{
+		File folder = new File(getDataFolder(), "storage");
+		File f = getContentFile();
+
+		if(!folder.exists())
+			folder.mkdirs();
+
+		if(!f.exists())
+			f.createNewFile();
+
+		return FileUtils.readLines(f);
+	}
+
+	/**
+	 * Gets the beacons.txt file
+	 */
+	private File getContentFile()
+	{
+		return new File(getDataFolder(), "storage/beacons.txt");
+	}
+	
+	/**
+	 * Sends a prefixed message to the given player
+	 * @param p The player to send the message to
+	 * @param msg
+	 */
+	private void sendMessage(Player p, String msg)
+	{
+		p.sendMessage(prefix + msg);
 	}
 }

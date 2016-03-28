@@ -462,8 +462,9 @@ public class ICRainbowBeacons extends JavaPlugin implements Listener
 			setBlockAbove(activeBeacons.get(i), 1, 0);
 			setBlockAbove(activeBeacons.get(i), 2, 0);
 			setBlockAbove(activeBeacons.get(i), 3, 0);
-			activeBeacons.remove(i);
 		}
+		
+		activeBeacons.clear();
 	}
 
 	/**

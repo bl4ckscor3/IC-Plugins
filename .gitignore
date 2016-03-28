@@ -11,8 +11,8 @@
 !.gitignore
 
 # And exclude these again
-
 **/.settings
 **/.classpath
 **/.project
 **/bin
+IC-Essentials

@@ -1,4 +1,4 @@
-package bl4ckscor3.plugin.icrb;
+package net.igneouscraft.plugin.icrb;
 
 import java.io.File;
 import java.io.IOException;

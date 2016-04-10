@@ -1,0 +1,14 @@
+name: IC-CTF
+main: net.igneouscraft.plugin.icctf.ICCTF
+version: 0.1
+author: [bl4ckscor3]
+description: A Capture The Flag plugin for IgneousCraft
+commands:
+    ctf:
+        description: Main command.
+        usage: /<command>
+
+permissions:
+    ctf.use:
+        description: Gives acces manage arenas.
+        default: op

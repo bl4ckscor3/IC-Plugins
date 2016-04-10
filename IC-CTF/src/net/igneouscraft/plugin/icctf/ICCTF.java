@@ -1,5 +1,7 @@
 package net.igneouscraft.plugin.icctf;
 
+import java.io.File;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -74,13 +76,35 @@ public class ICCTF extends JavaPlugin
 						{
 							if(!ArenaMode.active(p))
 							{
-								ArenaMode.activateFor(p, args[1]);
-								p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
+								if(!ArenaMode.isArena(args[1]))
+								{
+									ArenaMode.activateFor(p, args[1]);
+									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
+								}
+								else
+									p.sendMessage(prefix + "This arena already exists.");
 							}
+							else
+								p.sendMessage(prefix + "You are already in arena mode.");
 						}
 						else if(args[0].equals("remove"))
 						{
+							File folder = new File(ICCTF.i().getDataFolder(), "arenas");
 							
+							if(!folder.exists())
+								folder.mkdirs();
+							
+							for(File f : folder.listFiles())
+							{
+								if(f.getName().split(".yml")[0].equals(args[1]))
+								{
+									f.delete();
+									p.sendMessage(prefix + "Arena removed.");
+									return true;
+								}
+							}
+							
+							p.sendMessage(prefix + "There is no arena with this name.");
 						}
 						else
 						{

@@ -37,89 +37,89 @@ public class ArenaMode implements Listener
 			switch(data.getState())
 			{
 				case ARENA1:
-					f.set("arena1.x", l.getX());
-					f.set("arena1.y", l.getY());
-					f.set("arena1.z", l.getZ());
+					f.set("arena.1.x", l.getBlockX());
+					f.set("arena.1.y", l.getBlockY());
+					f.set("arena.1.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.ARENA2);
 					p.sendMessage(ICCTF.prefix + "Please select the second corner of the arena.");
 					break;
 				case ARENA2:
-					f.set("arena2.x", l.getX());
-					f.set("arena2.y", l.getY());
-					f.set("arena2.z", l.getZ());
+					f.set("arena.2.x", l.getBlockX());
+					f.set("arena.2.y", l.getBlockY());
+					f.set("arena.2.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.BLUEFLAG1);
 					p.sendMessage(ICCTF.prefix + "Please select the first corner of the blue team's flag.");
 					break;
 				case BLUEFLAG1:
-					f.set("blue.flag.1.x", l.getX());
-					f.set("blue.flag.1.y", l.getY());
-					f.set("blue.flag.1.z", l.getZ());
+					f.set("blue.flag.1.x", l.getBlockX());
+					f.set("blue.flag.1.y", l.getBlockY());
+					f.set("blue.flag.1.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.BLUEFLAG2);
 					p.sendMessage(ICCTF.prefix + "Please select the second corner of the blue team's flag.");
 					break;
 				case BLUEFLAG2:
-					f.set("blue.flag.2.x", l.getX());
-					f.set("blue.flag.2.y", l.getY());
-					f.set("blue.flag.2.z", l.getZ());
+					f.set("blue.flag.2.x", l.getBlockX());
+					f.set("blue.flag.2.y", l.getBlockY());
+					f.set("blue.flag.2.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.BLUESPAWNPOINTS);
 					p.sendMessage(ICCTF.prefix + "Please select the spawnpoints of the blue team. Type " + ChatColor.AQUA + "/ctf continue" + ChatColor.WHITE + " to finish.");
 					break;
 				case BLUESPAWNPOINTS:
 					data.increaseBlue();
-					f.set("blue.spawns." + data.blueSpawns() + ".x", l.getX());
-					f.set("blue.spawns." + data.blueSpawns() + ".y", l.getY() + 1);
-					f.set("blue.spawns." + data.blueSpawns() + ".z", l.getZ());
+					f.set("blue.spawns." + data.blueSpawns() + ".x", l.getBlockX());
+					f.set("blue.spawns." + data.blueSpawns() + ".y", l.getBlockY() + 1);
+					f.set("blue.spawns." + data.blueSpawns() + ".z", l.getBlockZ());
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
 					break;
 				case REDFLAG1:
-					f.set("red.flag.1.x", l.getX());
-					f.set("red.flag.1.y", l.getY());
-					f.set("red.flag.1.z", l.getZ());
+					f.set("red.flag.1.x", l.getBlockX());
+					f.set("red.flag.1.y", l.getBlockY());
+					f.set("red.flag.1.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.REDFLAG2);
 					p.sendMessage(ICCTF.prefix + "Please select the second corner of the red team's flag.");
 					break;
 				case REDFLAG2:
-					f.set("red.flag.1.x", l.getX());
-					f.set("red.flag.1.y", l.getY());
-					f.set("red.flag.1.z", l.getZ());
+					f.set("red.flag.1.x", l.getBlockX());
+					f.set("red.flag.1.y", l.getBlockY());
+					f.set("red.flag.1.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.REDSPAWNPOINTS);
 					p.sendMessage(ICCTF.prefix + "Please select the spawnpoints of the red team. Type " + ChatColor.AQUA + "/ctf continue" + ChatColor.WHITE + " to finish.");
 					break;
 				case REDSPAWNPOINTS:
 					data.increaseRed();
-					f.set("red.spawns." + data.redSpawns() + ".x", l.getX());
-					f.set("red.spawns." + data.redSpawns() + ".y", l.getY() + 1);
-					f.set("red.spawns." + data.redSpawns() + ".z", l.getZ());
+					f.set("red.spawns." + data.redSpawns() + ".x", l.getBlockX());
+					f.set("red.spawns." + data.redSpawns() + ".y", l.getBlockY() + 1);
+					f.set("red.spawns." + data.redSpawns() + ".z", l.getBlockZ());
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
 					break;
 				case LOBBY1:
-					f.set("lobby.1.x", l.getX());
-					f.set("lobby.1.y", l.getY());
-					f.set("lobby.1.z", l.getZ());
+					f.set("lobby.1.x", l.getBlockX());
+					f.set("lobby.1.y", l.getBlockY());
+					f.set("lobby.1.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.LOBBY2);
 					p.sendMessage(ICCTF.prefix + "Please select the second lobby corner.");
 					break;
 				case LOBBY2:
-					f.set("lobby.2.x", l.getX());
-					f.set("lobby.2.y", l.getY());
-					f.set("lobby.2.z", l.getZ());
+					f.set("lobby.2.x", l.getBlockX());
+					f.set("lobby.2.y", l.getBlockY());
+					f.set("lobby.2.z", l.getBlockZ());
 					f.save(data.getFile());
 					data.setState(AMS.LOBBYSPAWN);
 					p.sendMessage(ICCTF.prefix + "Please select the lobby spawn, where players will come to when they wait for the start of the game.");
 					break;
 				case LOBBYSPAWN:
-					f.set("lobby.spawn.x", l.getX());
-					f.set("lobby.spawn.y", l.getY() + 1);
-					f.set("lobby.spawn.z", l.getZ());
+					f.set("lobby.spawn.x", l.getBlockX());
+					f.set("lobby.spawn.y", l.getBlockY() + 1);
+					f.set("lobby.spawn.z", l.getBlockZ());
 					f.save(data.getFile());
 					ArenaMode.deactivateFor(p);
 					p.sendMessage(ICCTF.prefix + "You are done setting up the arena.");

@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import net.igneouscraft.plugin.icctf.ICCTF;
+import net.igneouscraft.plugin.icctf.util.Cuboid;
 
 /**
  * Models a lobby waiting for an arena to start
@@ -16,9 +18,8 @@ import net.igneouscraft.plugin.icctf.ICCTF;
 public class Lobby
 {
 	public static final ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
-	private String arenaName;
-	private ArrayList<String> players = new ArrayList<String>();
-	private ArrayList<String> lobbyBounds= new ArrayList<String>();
+	private ArrayList<Player> players = new ArrayList<Player>();
+	private Cuboid bounds;
 	private Location spawn;
 	private Arena arena;
 	
@@ -34,10 +35,13 @@ public class Lobby
 			arena = null;
 
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(f);
+		World w = ICCTF.i().getServer().getWorld(yaml.getString("world"));
 		
-		arena = new Arena(yaml);
-		//TODO: write data from yaml info variables
-		arenaName = aN;
+		arena = new Arena(yaml, aN, w);
+		bounds = new Cuboid(
+				new Location(w, yaml.getInt("lobby.1.x"), yaml.getInt("lobby.1.y"), yaml.getInt("lobby.1.z")),
+				new Location(w, yaml.getInt("lobby.2.x"), yaml.getInt("lobby.2.y"), yaml.getInt("lobby.2.z")));
+		spawn = new Location(w, yaml.getInt("lobby.spawn.x"), yaml.getInt("lobby.spawn.y"), yaml.getInt("lobby.spawn.z"));
 	}
 	
 	/**
@@ -51,14 +55,32 @@ public class Lobby
 	/**
 	 * @return All the players that are currently in the lobby
 	 */
-	public ArrayList<String> getPlayers()
+	public ArrayList<Player> getPlayers()
 	{
 		return players;
 	}
 	
+	/**
+	 * @return The bounds of this lobby as a Cuboid
+	 */
+	public Cuboid getBounds()
+	{
+		return bounds;
+	}
+	
+	/**
+	 * @return The spawn of this lobby as a Location
+	 */
+	public Location getSpawn()
+	{
+		return spawn;
+	}
+	
 	public void addPlayer(Player p)
 	{
-		//TODO: Add player to lobby and tp
+		players.add(p);
+		p.teleport(spawn);
+		p.sendMessage(ICCTF.prefix + "You have been teleported to the lobby. Please select your team, or let the server randomly decide for you.");
 	}
 	
 	/**

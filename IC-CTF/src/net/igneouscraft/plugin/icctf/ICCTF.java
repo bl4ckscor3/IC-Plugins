@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.igneouscraft.plugin.icctf.arena.Arena;
 import net.igneouscraft.plugin.icctf.arena.mode.AMS;
 import net.igneouscraft.plugin.icctf.arena.mode.ArenaMode;
 import net.igneouscraft.plugin.icctf.listener.SignListener;
@@ -74,6 +75,8 @@ public class ICCTF extends JavaPlugin
 							else
 								p.sendMessage(prefix + "You are not in arena mode.");
 						}
+						else
+							sendHelp(p);
 					}
 					else if(args.length == 2) //two arguments
 					{
@@ -81,7 +84,7 @@ public class ICCTF extends JavaPlugin
 						{
 							if(!ArenaMode.active(p))
 							{
-								if(!Util.isArena(args[1]))
+								if(!Arena.isArena(args[1]))
 								{
 									ArenaMode.activateFor(p, args[1]);
 									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");

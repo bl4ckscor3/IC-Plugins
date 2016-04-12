@@ -1,43 +1,32 @@
 package net.igneouscraft.plugin.icctf.listener;
 
-import org.bukkit.block.Sign;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.igneouscraft.plugin.icctf.ICCTF;
-import net.igneouscraft.plugin.icctf.Util;
-import net.igneouscraft.plugin.icctf.arena.Lobby;
+import net.igneouscraft.plugin.icctf.arena.Arena;
 
 public class SignListener implements Listener
 {
 	@EventHandler
 	public void onSignChange(SignChangeEvent event)
 	{
-		Sign s = (Sign)event.getBlock();
-		
-		if(s.getLine(0).equalsIgnoreCase("[ctf]"))
+		if(event.getBlock().getType() == Material.WALL_SIGN)
 		{
-			String line1 = s.getLine(1);
-			
-			if(Util.isArena(line1))
+			if(event.getLine(0).equalsIgnoreCase("[ctf]"))
 			{
-				Lobby l;
-				
-				if(!Lobby.isLobby(line1))
-					l = Lobby.addLobby(new Lobby(line1));
-				else
-					l = Lobby.getLobby(line1);
-				
-				if(l.getArena() == null)
-				{
-					Lobby.lobbies.clear();
+				if(!Arena.isArena(event.getLine(1)))
 					event.getPlayer().sendMessage(ICCTF.prefix + "This arena does not exist.");
+				else
+				{
+					event.setLine(0, ICCTF.prefix);
+					event.setLine(3, ChatColor.GREEN + "0/1234"); //TODO: add player limit per arena
 				}
 			}
-			else
-				event.getPlayer().sendMessage(ICCTF.prefix + "This arena does not exist.");
 		}
 	}
 	

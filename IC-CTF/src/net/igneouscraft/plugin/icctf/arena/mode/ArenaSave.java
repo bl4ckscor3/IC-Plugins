@@ -1,4 +1,4 @@
-package net.igneouscraft.plugin.icctf.arenamode;
+package net.igneouscraft.plugin.icctf.arena.mode;
 
 import java.io.File;
 import java.io.IOException;

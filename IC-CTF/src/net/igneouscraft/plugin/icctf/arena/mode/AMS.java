@@ -1,4 +1,4 @@
-package net.igneouscraft.plugin.icctf.arenamode;
+package net.igneouscraft.plugin.icctf.arena.mode;
 
 /**
  * Defines what state a player in arena mode is currently in
@@ -9,10 +9,13 @@ public enum AMS
 {
 	ARENA1,
 	ARENA2,
-	REDSPAWNPOINTS,
+	BLUEFLAG1,
+	BLUEFLAG2,
+	BLUESPAWNPOINTS,
 	REDFLAG1,
 	REDFLAG2,
-	BLUESPAWNPOINTS,
-	BLUEFLAG1,
-	BLUEFLAG2
+	REDSPAWNPOINTS,
+	LOBBY1,
+	LOBBY2,
+	LOBBYSPAWN
 }

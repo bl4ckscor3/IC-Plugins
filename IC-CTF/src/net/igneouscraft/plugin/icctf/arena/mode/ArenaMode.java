@@ -1,6 +1,5 @@
-package net.igneouscraft.plugin.icctf.arenamode;
+package net.igneouscraft.plugin.icctf.arena.mode;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -54,52 +53,76 @@ public class ArenaMode implements Listener
 					p.sendMessage(ICCTF.prefix + "Please select the first corner of the blue team's flag.");
 					break;
 				case BLUEFLAG1:
-					f.set("blueflag1.x", l.getX());
-					f.set("blueflag1.y", l.getY());
-					f.set("blueflag1.z", l.getZ());
+					f.set("blue.flag.1.x", l.getX());
+					f.set("blue.flag.1.y", l.getY());
+					f.set("blue.flag.1.z", l.getZ());
 					f.save(data.getFile());
 					data.setState(AMS.BLUEFLAG2);
 					p.sendMessage(ICCTF.prefix + "Please select the second corner of the blue team's flag.");
 					break;
 				case BLUEFLAG2:
-					f.set("blueflag2.x", l.getX());
-					f.set("blueflag2.y", l.getY());
-					f.set("blueflag2.z", l.getZ());
+					f.set("blue.flag.2.x", l.getX());
+					f.set("blue.flag.2.y", l.getY());
+					f.set("blue.flag.2.z", l.getZ());
 					f.save(data.getFile());
 					data.setState(AMS.BLUESPAWNPOINTS);
 					p.sendMessage(ICCTF.prefix + "Please select the spawnpoints of the blue team. Type " + ChatColor.AQUA + "/ctf continue" + ChatColor.WHITE + " to finish.");
 					break;
 				case BLUESPAWNPOINTS:
 					data.increaseBlue();
-					f.set("bluespawns." + data.blueSpawns() + ".x", l.getX());
-					f.set("bluespawns." + data.blueSpawns() + ".y", l.getY());
-					f.set("bluespawns." + data.blueSpawns() + ".z", l.getZ());
+					f.set("blue.spawns." + data.blueSpawns() + ".x", l.getX());
+					f.set("blue.spawns." + data.blueSpawns() + ".y", l.getY() + 1);
+					f.set("blue.spawns." + data.blueSpawns() + ".z", l.getZ());
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
 					break;
 				case REDFLAG1:
-					f.set("redflag1.x", l.getX());
-					f.set("redflag1.y", l.getY());
-					f.set("redflag1.z", l.getZ());
+					f.set("red.flag.1.x", l.getX());
+					f.set("red.flag.1.y", l.getY());
+					f.set("red.flag.1.z", l.getZ());
 					f.save(data.getFile());
 					data.setState(AMS.REDFLAG2);
 					p.sendMessage(ICCTF.prefix + "Please select the second corner of the red team's flag.");
 					break;
 				case REDFLAG2:
-					f.set("redflag1.x", l.getX());
-					f.set("redflag1.y", l.getY());
-					f.set("redflag1.z", l.getZ());
+					f.set("red.flag.1.x", l.getX());
+					f.set("red.flag.1.y", l.getY());
+					f.set("red.flag.1.z", l.getZ());
 					f.save(data.getFile());
 					data.setState(AMS.REDSPAWNPOINTS);
 					p.sendMessage(ICCTF.prefix + "Please select the spawnpoints of the red team. Type " + ChatColor.AQUA + "/ctf continue" + ChatColor.WHITE + " to finish.");
 					break;
 				case REDSPAWNPOINTS:
 					data.increaseRed();
-					f.set("redspawns." + data.redSpawns() + ".x", l.getX());
-					f.set("redspawns." + data.redSpawns() + ".y", l.getY());
-					f.set("redspawns." + data.redSpawns() + ".z", l.getZ());
+					f.set("red.spawns." + data.redSpawns() + ".x", l.getX());
+					f.set("red.spawns." + data.redSpawns() + ".y", l.getY() + 1);
+					f.set("red.spawns." + data.redSpawns() + ".z", l.getZ());
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
+					break;
+				case LOBBY1:
+					f.set("lobby.1.x", l.getX());
+					f.set("lobby.1.y", l.getY());
+					f.set("lobby.1.z", l.getZ());
+					f.save(data.getFile());
+					data.setState(AMS.LOBBY2);
+					p.sendMessage(ICCTF.prefix + "Please select the second lobby corner.");
+					break;
+				case LOBBY2:
+					f.set("lobby.2.x", l.getX());
+					f.set("lobby.2.y", l.getY());
+					f.set("lobby.2.z", l.getZ());
+					f.save(data.getFile());
+					data.setState(AMS.LOBBYSPAWN);
+					p.sendMessage(ICCTF.prefix + "Please select the lobby spawn, where players will come to when they wait for the start of the game.");
+					break;
+				case LOBBYSPAWN:
+					f.set("lobby.spawn.x", l.getX());
+					f.set("lobby.spawn.y", l.getY() + 1);
+					f.set("lobby.spawn.z", l.getZ());
+					f.save(data.getFile());
+					ArenaMode.deactivateFor(p);
+					p.sendMessage(ICCTF.prefix + "You are done setting up the arena.");
 					break;
 				default:
 					break; 
@@ -174,26 +197,5 @@ public class ArenaMode implements Listener
 	public static int redSpawns(Player p)
 	{
 		return players.get(p).redSpawns();
-	}
-	
-	/**
-	 * Checks if an arena exists
-	 * @param name The name of the arena to check
-	 * @return
-	 */
-	public static boolean isArena(String name)
-	{
-		File folder = new File(ICCTF.i().getDataFolder(), "arenas");
-		
-		if(!folder.exists())
-			folder.mkdirs();
-		
-		for(File f : folder.listFiles())
-		{
-			if(f.getName().split(".yml")[0].equals(name))
-				return true;
-		}
-		
-		return false;
 	}
 }

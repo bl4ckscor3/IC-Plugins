@@ -8,8 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.igneouscraft.plugin.icctf.arenamode.AMS;
-import net.igneouscraft.plugin.icctf.arenamode.ArenaMode;
+import net.igneouscraft.plugin.icctf.arena.mode.AMS;
+import net.igneouscraft.plugin.icctf.arena.mode.ArenaMode;
+import net.igneouscraft.plugin.icctf.listener.SignListener;
 
 public class ICCTF extends JavaPlugin
 {
@@ -21,6 +22,7 @@ public class ICCTF extends JavaPlugin
 	{
 		instance = this;
 		getServer().getPluginManager().registerEvents(new ArenaMode(), this);
+		getServer().getPluginManager().registerEvents(new SignListener(), this);
 	}
 
 	@Override
@@ -28,16 +30,19 @@ public class ICCTF extends JavaPlugin
 	{
 		try
 		{
-			if(!(sender instanceof Player))
-				return true;
-
-			Player p = (Player)sender;
-
 			if(cmd.getName().equals("ctf"))
 			{
+				if(!(sender instanceof Player))
+				{
+					sender.sendMessage(prefix + "You cannot use this plugin.");
+					return true;
+				}
+
+				Player p = (Player)sender;
+				
 				if(p.hasPermission("ctf.use"))
 				{
-					if(args.length == 1)
+					if(args.length == 1) //only one argument
 					{
 						if(args[0].equals("continue"))
 						{
@@ -48,7 +53,7 @@ public class ICCTF extends JavaPlugin
 									if(ArenaMode.blueSpawns(p) > 0)
 									{
 										ArenaMode.setState(p, AMS.REDFLAG1);
-										p.sendMessage(ICCTF.prefix + "Please select the first corner of the red team's flag.");
+										p.sendMessage(prefix + "Please select the first corner of the red team's flag.");
 									}
 									else
 										p.sendMessage(prefix + "You need to set at least one spawn point.");
@@ -57,8 +62,8 @@ public class ICCTF extends JavaPlugin
 								{
 									if(ArenaMode.redSpawns(p) > 0)
 									{
-										ArenaMode.deactivateFor(p);
-										p.sendMessage(prefix + "You are done setting up the arena.");
+										ArenaMode.setState(p, AMS.LOBBY1);
+										p.sendMessage(prefix + "Please select the first lobby corner.");
 									}
 									else
 										p.sendMessage(prefix + "You need to set at least one spawn point.");
@@ -70,13 +75,13 @@ public class ICCTF extends JavaPlugin
 								p.sendMessage(prefix + "You are not in arena mode.");
 						}
 					}
-					else if(args.length == 2)
+					else if(args.length == 2) //two arguments
 					{
 						if(args[0].equals("add"))
 						{
 							if(!ArenaMode.active(p))
 							{
-								if(!ArenaMode.isArena(args[1]))
+								if(!Util.isArena(args[1]))
 								{
 									ArenaMode.activateFor(p, args[1]);
 									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
@@ -87,13 +92,14 @@ public class ICCTF extends JavaPlugin
 							else
 								p.sendMessage(prefix + "You are already in arena mode.");
 						}
+						/**/
 						else if(args[0].equals("remove"))
 						{
-							File folder = new File(ICCTF.i().getDataFolder(), "arenas");
-							
+							File folder = new File(getDataFolder(), "arenas");
+
 							if(!folder.exists())
 								folder.mkdirs();
-							
+
 							for(File f : folder.listFiles())
 							{
 								if(f.getName().split(".yml")[0].equals(args[1]))
@@ -103,18 +109,14 @@ public class ICCTF extends JavaPlugin
 									return true;
 								}
 							}
-							
+
 							p.sendMessage(prefix + "There is no arena with this name.");
 						}
 						else
-						{
-							//TODO: Help
-						}
+							sendHelp(p);
 					}
 					else
-					{
-						//TODO: Help
-					}
+						sendHelp(p);
 				}
 				else
 					p.sendMessage(prefix + "You do not have permission to execute this command.");
@@ -134,5 +136,18 @@ public class ICCTF extends JavaPlugin
 	public static ICCTF i()
 	{
 		return instance;
+	}
+
+	/**
+	 * Sends the help menu to a CommandSender
+	 * @param sender The instance to send the message to
+	 */
+	private void sendHelp(CommandSender sender)
+	{
+		sender.sendMessage(prefix + "-----------Help for IC-CTF-----------");
+		sender.sendMessage(prefix + ChatColor.RED + "/ctf add <name>" + ChatColor.WHITE + " - Sets you into arena mode so you can create a new arena with the given name.");
+		sender.sendMessage(prefix + ChatColor.RED + "/ctf remove <name>" + ChatColor.WHITE + " - Removes the arena with the given name.");
+		sender.sendMessage(prefix + ChatColor.RED + "/ctf continue" + ChatColor.WHITE + " - Allows you to continue setting up the arena after you are done setting up the spawnpoints.");
+		sender.sendMessage(prefix + "-----------------------------------");
 	}
 }

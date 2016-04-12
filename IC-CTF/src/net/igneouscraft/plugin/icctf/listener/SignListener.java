@@ -2,13 +2,16 @@ package net.igneouscraft.plugin.icctf.listener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.igneouscraft.plugin.icctf.ICCTF;
 import net.igneouscraft.plugin.icctf.arena.Arena;
+import net.igneouscraft.plugin.icctf.arena.Lobby;
 
 public class SignListener implements Listener
 {
@@ -33,16 +36,25 @@ public class SignListener implements Listener
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event)
 	{
-//		if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
-//		{
-//			if(event.getClickedBlock().getType() == Material.WALL_SIGN)
-//			{
-//				Sign s = (Sign)event.getClickedBlock();
-//				
-//				if(s.getLine(0).equals("[CTF]"))
-//				{
-//				}
-//			}
-//		}
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
+		{
+			if(event.getClickedBlock().getType() == Material.WALL_SIGN)
+			{
+				Sign s = (Sign)event.getClickedBlock().getState();
+
+				if(s.getLine(0).trim().equals(ICCTF.prefix.substring(0, ICCTF.prefix.length() - 2).trim()))
+				{
+					String line1 = s.getLine(1);
+					Lobby l;
+
+					if(!Lobby.isLobby(line1))
+						l = new Lobby(line1);
+					else
+						l = Lobby.getLobby(line1);
+					
+					l.addPlayer(event.getPlayer());
+				}
+			}
+		}
 	}
 }

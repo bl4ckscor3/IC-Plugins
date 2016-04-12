@@ -28,12 +28,7 @@ public class Lobby
 	 */
 	public Lobby(String aN)
 	{
-		File folder = new File(ICCTF.i().getDataFolder(), "arenas");
 		File f = new File(ICCTF.i().getDataFolder(), "arenas/" + aN +".yml");
-		
-		if(!folder.exists() || !f.exists())
-			arena = null;
-
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(f);
 		World w = ICCTF.i().getServer().getWorld(yaml.getString("world"));
 		

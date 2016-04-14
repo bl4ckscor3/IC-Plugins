@@ -99,7 +99,7 @@ public class Lobby
 	public void removePlayer(Player p)
 	{
 		players.remove(p.getName());
-		//TODO: tp player to initial location
+		//TODO: tp player to initial location aka world spawn he was in previously
 
 		for(Sign s : getArena().getSigns())
 		{

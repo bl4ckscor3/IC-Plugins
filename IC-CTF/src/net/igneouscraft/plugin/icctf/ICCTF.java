@@ -14,6 +14,10 @@ import net.igneouscraft.plugin.icctf.arena.mode.AMS;
 import net.igneouscraft.plugin.icctf.arena.mode.ArenaMode;
 import net.igneouscraft.plugin.icctf.listener.SignListener;
 
+/**
+ * Main class for this plugin
+ * @author bl4ckscor3
+ */
 public class ICCTF extends JavaPlugin
 {
 	public static final String prefix = ChatColor.DARK_PURPLE + "==" + ChatColor.AQUA + "IC-CTF" + ChatColor.DARK_PURPLE + "== " + ChatColor.WHITE;
@@ -41,7 +45,7 @@ public class ICCTF extends JavaPlugin
 			{
 				if(!(sender instanceof Player))
 				{
-					sender.sendMessage(prefix + "You cannot use this plugin.");
+					sender.sendMessage(prefix + "You can only use this plugin as a player.");
 					return true;
 				}
 
@@ -85,10 +89,7 @@ public class ICCTF extends JavaPlugin
 						else if(args[0].equals("leave"))
 						{
 							if(Lobby.isInLobby(p))
-							{
 								Lobby.getLobby(p).removePlayer(p);
-								p.sendMessage(prefix + "You are no longer in the lobby.");
-							}
 							else
 								p.sendMessage(prefix + "You are not in a lobby.");
 						}
@@ -126,10 +127,7 @@ public class ICCTF extends JavaPlugin
 							if(!ArenaMode.active(p))
 							{
 								if(!Arena.isArena(args[1]))
-								{
 									ArenaMode.activateFor(p, args[1], args[2]);
-									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
-								}
 								else
 									p.sendMessage(prefix + "This arena already exists.");
 							}

@@ -5,9 +5,11 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.igneouscraft.plugin.icctf.ICCTF;
+import net.igneouscraft.plugin.icctf.listener.SignListener;
 import net.igneouscraft.plugin.icctf.util.Cuboid;
 
 /**
@@ -16,6 +18,7 @@ import net.igneouscraft.plugin.icctf.util.Cuboid;
  */
 public class Arena
 {
+	private static final ArrayList<Arena> arenas = new ArrayList<Arena>();
 	private World world;
 	private int players;
 	private String name;
@@ -29,10 +32,12 @@ public class Arena
 	 * @param yaml The file this arena is saved in
 	 * @param n The name of the arena
 	 * @param w The world this arena is in
+	 * @param s The sign this lobby got joined from (used for updating the player values)
 	 */
-	public Arena(YamlConfiguration yaml, String n, World w)
+	public Arena(YamlConfiguration yaml, String n, World w, Sign s)
 	{
 		world = w;
+		players = yaml.getInt("players");
 		name = n;
 		arenaBounds = new Cuboid(
 				new Location(w, yaml.getInt("arena.1.x"), yaml.getInt("arena.1.y"), yaml.getInt("arena.1.z")),
@@ -75,6 +80,8 @@ public class Arena
 				break forLoop;
 			}
 		}
+		
+		arenas.add(this);
 	}
 
 	/**
@@ -140,6 +147,14 @@ public class Arena
 	{
 		return players;
 	}
+
+	/**
+	 * @return All signs this arena got accessed from
+	 */
+	public ArrayList<Sign> getSigns()
+	{
+		return SignListener.signs.get(name);
+	}
 	
 	/**
 	 * Checks if an arena exists
@@ -168,21 +183,30 @@ public class Arena
 	 */
 	public static Arena getArena(String name)
 	{
-		File folder = new File(ICCTF.i().getDataFolder(), "arenas");
-
-		if(!folder.exists())
-			folder.mkdirs();
-
-		for(File f : folder.listFiles())
+		for(Arena a : arenas)
 		{
-			if(f.getName().split(".yml")[0].equals(name))
-			{
-				YamlConfiguration yaml = YamlConfiguration.loadConfiguration(f);
-
-				return new Arena(yaml, name, ICCTF.i().getServer().getWorld(yaml.getString("world")));
-			}
+			if(a.getName().equals(name))
+				return a;
 		}
 
 		return null;
+	}
+	
+	/**
+	 * @return All existing arenas
+	 */
+	public static ArrayList<Arena> getArenas()
+	{
+		return arenas;
+	}
+	
+	/**
+	 * Gets the maximum of players the given arena can be joined by
+	 * @param name The name of the arena
+	 * @return The maximum amount of players, 0 if none given
+	 */
+	public static int getPlayerMaximum(String name)
+	{
+		return !isArena(name) ? 0 : YamlConfiguration.loadConfiguration(new File(ICCTF.i().getDataFolder(), "arenas/" + name + ".yml")).getInt("players");
 	}
 }

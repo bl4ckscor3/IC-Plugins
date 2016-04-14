@@ -70,9 +70,9 @@ public class ArenaMode implements Listener
 					break;
 				case BLUESPAWNPOINTS:
 					data.increaseBlue();
-					f.set("blue.spawns." + data.blueSpawns() + ".x", l.getBlockX());
-					f.set("blue.spawns." + data.blueSpawns() + ".y", l.getBlockY() + 1);
-					f.set("blue.spawns." + data.blueSpawns() + ".z", l.getBlockZ());
+					f.set("blue.spawns." + data.blueSpawns() + ".x", l.getBlockX() + 0.5D);
+					f.set("blue.spawns." + data.blueSpawns() + ".y", l.getBlockY() + 1.0D);
+					f.set("blue.spawns." + data.blueSpawns() + ".z", l.getBlockZ() + 0.5D);
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
 					break;
@@ -94,9 +94,9 @@ public class ArenaMode implements Listener
 					break;
 				case REDSPAWNPOINTS:
 					data.increaseRed();
-					f.set("red.spawns." + data.redSpawns() + ".x", l.getBlockX());
-					f.set("red.spawns." + data.redSpawns() + ".y", l.getBlockY() + 1);
-					f.set("red.spawns." + data.redSpawns() + ".z", l.getBlockZ());
+					f.set("red.spawns." + data.redSpawns() + ".x", l.getBlockX() + 0.5D);
+					f.set("red.spawns." + data.redSpawns() + ".y", l.getBlockY() + 1.0D);
+					f.set("red.spawns." + data.redSpawns() + ".z", l.getBlockZ() + 0.5D);
 					f.save(data.getFile());
 					p.sendMessage(ICCTF.prefix + "Spawnpoint added.");
 					break;
@@ -117,9 +117,9 @@ public class ArenaMode implements Listener
 					p.sendMessage(ICCTF.prefix + "Please select the lobby spawn, where players will come to when they wait for the start of the game.");
 					break;
 				case LOBBYSPAWN:
-					f.set("lobby.spawn.x", l.getBlockX());
-					f.set("lobby.spawn.y", l.getBlockY() + 1);
-					f.set("lobby.spawn.z", l.getBlockZ());
+					f.set("lobby.spawn.x", l.getBlockX() + 0.5D);
+					f.set("lobby.spawn.y", l.getBlockY() + 1.0D);
+					f.set("lobby.spawn.z", l.getBlockZ() + 0.5D);
 					f.save(data.getFile());
 					ArenaMode.deactivateFor(p);
 					p.sendMessage(ICCTF.prefix + "You are done setting up the arena.");
@@ -155,13 +155,14 @@ public class ArenaMode implements Listener
 				int min = ICCTF.i().getConfig().getInt("minimumPlayers");
 				int max = ICCTF.i().getConfig().getInt("maximumPlayers");
 				
-				if(i < min || i > max)
+				if(i < min || i > max || i % 2 != 0)
 				{
-					p.sendMessage(ICCTF.prefix + "Please specify a number between " + min + " and " + max + ".");
+					p.sendMessage(ICCTF.prefix + "Please specify an even number between " + min + " and " + max + ".");
 					return;
 				}
 				
 				players.put(p, new ArenaSave(p, name, i));
+				p.sendMessage(ICCTF.prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
 			}
 			catch(NumberFormatException e)
 			{

@@ -3,8 +3,10 @@ package net.igneouscraft.plugin.icctf.arena;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -18,25 +20,27 @@ import net.igneouscraft.plugin.icctf.util.Cuboid;
 public class Lobby
 {
 	public static final ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
-	private ArrayList<Player> players = new ArrayList<Player>();
+	private ArrayList<String> players = new ArrayList<String>();
 	private Cuboid bounds;
 	private Location spawn;
 	private Arena arena;
 
 	/**
 	 * @param aN The name of the arena this lobby corresponds to
+	 * @param s The sign this lobby got joined from (used for updating the player values)
 	 */
-	public Lobby(String aN)
+	public Lobby(String aN, Sign s)
 	{
 		File f = new File(ICCTF.i().getDataFolder(), "arenas/" + aN +".yml");
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(f);
 		World w = ICCTF.i().getServer().getWorld(yaml.getString("world"));
 
-		arena = new Arena(yaml, aN, w);
+		arena = new Arena(yaml, aN, w, s);
 		bounds = new Cuboid(
 				new Location(w, yaml.getInt("lobby.1.x"), yaml.getInt("lobby.1.y"), yaml.getInt("lobby.1.z")),
 				new Location(w, yaml.getInt("lobby.2.x"), yaml.getInt("lobby.2.y"), yaml.getInt("lobby.2.z")));
-		spawn = new Location(w, yaml.getInt("lobby.spawn.x"), yaml.getInt("lobby.spawn.y"), yaml.getInt("lobby.spawn.z"));
+		spawn = new Location(w, yaml.getDouble("lobby.spawn.x"), yaml.getDouble("lobby.spawn.y"), yaml.getDouble("lobby.spawn.z"));
+		lobbies.add(this);
 	}
 
 	/**
@@ -50,7 +54,7 @@ public class Lobby
 	/**
 	 * @return All the players that are currently in the lobby
 	 */
-	public ArrayList<Player> getPlayers()
+	public ArrayList<String> getPlayers()
 	{
 		return players;
 	}
@@ -77,9 +81,15 @@ public class Lobby
 	 */
 	public void addPlayer(Player p)
 	{
-		players.add(p);
+		players.add(p.getName());
 		p.teleport(spawn);
 		p.sendMessage(ICCTF.prefix + "You have been teleported to the lobby. Please select your team, or let the server randomly decide for you.");
+		
+		for(Sign s : getArena().getSigns())
+		{
+			s.setLine(3, "" + ChatColor.GREEN + (Integer.parseInt(ChatColor.stripColor(s.getLine(3).split("/")[0])) + 1) + "/" + getArena().getPlayers());
+			s.update();
+		}
 	}
 	
 	/**
@@ -88,11 +98,19 @@ public class Lobby
 	 */
 	public void removePlayer(Player p)
 	{
-		players.remove(p);
+		players.remove(p.getName());
 		//TODO: tp player to initial location
+
+		for(Sign s : getArena().getSigns())
+		{
+			s.setLine(3, "" + ChatColor.GREEN + (Integer.parseInt(ChatColor.stripColor(s.getLine(3).split("/")[0])) - 1) + "/" + getArena().getPlayers());
+			s.update();
+		}
 		
 		if(players.size() == 0)
 			lobbies.remove(this);
+
+		p.sendMessage(ICCTF.prefix + "You are no longer in the lobby.");
 	}
 
 	/**
@@ -102,9 +120,9 @@ public class Lobby
 	 */
 	public boolean isInThisLobby(Player p)
 	{
-		for(Player pl : getPlayers())
+		for(String s : getPlayers())
 		{
-			if(pl.equals(p))
+			if(s.equals(p.getName()))
 				return true;
 		}
 
@@ -125,17 +143,6 @@ public class Lobby
 		}
 
 		return false;
-	}
-
-	/**
-	 * Adds a lobby to the list
-	 * @param l The lobby to add
-	 * @return The lobby that got added
-	 */
-	public static Lobby addLobby(Lobby l)
-	{
-		lobbies.add(l);
-		return l;
 	}
 
 	/**
@@ -162,9 +169,9 @@ public class Lobby
 	{
 		for(Lobby l : lobbies)
 		{
-			for(Player pl : l.getPlayers())
+			for(String s : l.getPlayers())
 			{
-				if(pl.equals(p))
+				if(s.equals(p.getName()))
 					return l;
 			}
 		}
@@ -181,9 +188,9 @@ public class Lobby
 	{
 		for(Lobby l : lobbies)
 		{
-			for(Player pl : l.getPlayers())
+			for(String s : l.getPlayers())
 			{
-				if(pl.equals(p))
+				if(s.equals(p.getName()))
 					return true;
 			}
 		}

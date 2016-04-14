@@ -11,6 +11,7 @@ import net.igneouscraft.plugin.icctf.ICCTF;
 
 /**
  * Serves as a class to save information about the player who is currently in arena mode
+ * @author bl4ckscor3
  */
 public class ArenaSave
 {
@@ -23,7 +24,12 @@ public class ArenaSave
 	private int blueSpawns = 0;
 	private int redSpawns = 0;
 	
-	public ArenaSave(Player player, String n) throws IOException
+	/**
+	 * @param player The player who currently sets up this arena
+	 * @param n The name of the arena
+	 * @param players The maximum amount of players required to start
+	 */
+	public ArenaSave(Player player, String n, int players) throws IOException
 	{
 		p = player;
 		name = n;
@@ -42,6 +48,7 @@ public class ArenaSave
 		file = f;
 		yaml = YamlConfiguration.loadConfiguration(f);
 		yaml.set("world", player.getWorld().getName());
+		yaml.set("players", players);
 		yaml.save(f);
 	}
 	

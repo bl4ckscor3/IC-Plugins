@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.igneouscraft.plugin.icctf.arena.Arena;
+import net.igneouscraft.plugin.icctf.arena.Lobby;
 import net.igneouscraft.plugin.icctf.arena.mode.AMS;
 import net.igneouscraft.plugin.icctf.arena.mode.ArenaMode;
 import net.igneouscraft.plugin.icctf.listener.SignListener;
@@ -24,6 +25,11 @@ public class ICCTF extends JavaPlugin
 		instance = this;
 		getServer().getPluginManager().registerEvents(new ArenaMode(), this);
 		getServer().getPluginManager().registerEvents(new SignListener(), this);
+		reloadConfig();
+		getConfig().addDefault("minimumPlayers", 10);
+		getConfig().addDefault("maximumPlayers", 20);
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 	}
 
 	@Override
@@ -75,28 +81,23 @@ public class ICCTF extends JavaPlugin
 							else
 								p.sendMessage(prefix + "You are not in arena mode.");
 						}
+						/**/
+						else if(args[0].equals("leave"))
+						{
+							if(Lobby.isInLobby(p))
+							{
+								Lobby.getLobby(p).removePlayer(p);
+								p.sendMessage(prefix + "You are no longer in the lobby.");
+							}
+							else
+								p.sendMessage(prefix + "You are not in a lobby.");
+						}
 						else
 							sendHelp(p);
 					}
 					else if(args.length == 2) //two arguments
 					{
-						if(args[0].equals("add"))
-						{
-							if(!ArenaMode.active(p))
-							{
-								if(!Arena.isArena(args[1]))
-								{
-									ArenaMode.activateFor(p, args[1]);
-									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
-								}
-								else
-									p.sendMessage(prefix + "This arena already exists.");
-							}
-							else
-								p.sendMessage(prefix + "You are already in arena mode.");
-						}
-						/**/
-						else if(args[0].equals("remove"))
+						if(args[0].equals("remove"))
 						{
 							File folder = new File(getDataFolder(), "arenas");
 
@@ -117,6 +118,24 @@ public class ICCTF extends JavaPlugin
 						}
 						else
 							sendHelp(p);
+					}
+					else if(args.length == 3) //three arguments
+					{
+						if(args[0].equals("add"))
+						{
+							if(!ArenaMode.active(p))
+							{
+								if(!Arena.isArena(args[1]))
+								{
+									ArenaMode.activateFor(p, args[1], args[2]);
+									p.sendMessage(prefix + "You are now in Arena Mode. Please select the first corner of the arena (leftclick a block, similar to a World-Edit selection).");
+								}
+								else
+									p.sendMessage(prefix + "This arena already exists.");
+							}
+							else
+								p.sendMessage(prefix + "You are already in arena mode.");
+						}
 					}
 					else
 						sendHelp(p);

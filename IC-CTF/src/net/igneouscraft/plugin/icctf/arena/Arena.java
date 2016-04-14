@@ -17,6 +17,7 @@ import net.igneouscraft.plugin.icctf.util.Cuboid;
 public class Arena
 {
 	private World world;
+	private int players;
 	private String name;
 	private Cuboid arenaBounds;
 	private Cuboid blueFlagBounds;
@@ -132,6 +133,14 @@ public class Arena
 		return redSpawns;
 	}
 
+	/**
+	 * @return The maximum amount of players required to start
+	 */
+	public int getPlayers()
+	{
+		return players;
+	}
+	
 	/**
 	 * Checks if an arena exists
 	 * @param name The name of the arena to check

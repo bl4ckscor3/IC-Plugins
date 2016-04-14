@@ -145,10 +145,29 @@ public class ArenaMode implements Listener
 	 * @param p The player to activate arena mode for
 	 * @param name The name of the arena
 	 */
-	public static void activateFor(Player p, String name) throws IOException
+	public static void activateFor(Player p, String name, String maxPlayers) throws IOException
 	{
 		if(!active(p))
-			players.put(p, new ArenaSave(p, name));
+		{
+			try
+			{
+				int i = Integer.parseInt(maxPlayers);
+				int min = ICCTF.i().getConfig().getInt("minimumPlayers");
+				int max = ICCTF.i().getConfig().getInt("maximumPlayers");
+				
+				if(i < min || i > max)
+				{
+					p.sendMessage(ICCTF.prefix + "Please specify a number between " + min + " and " + max + ".");
+					return;
+				}
+				
+				players.put(p, new ArenaSave(p, name, i));
+			}
+			catch(NumberFormatException e)
+			{
+				p.sendMessage(ICCTF.prefix + "\"" + maxPlayers + "\" is not a number.");
+			}
+		}
 	}
 	
 	/**

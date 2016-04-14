@@ -27,7 +27,7 @@ public class SignListener implements Listener
 				else
 				{
 					event.setLine(0, ICCTF.prefix);
-					event.setLine(3, ChatColor.GREEN + "0/1234"); //TODO: add player limit per arena
+					event.setLine(3, ChatColor.GREEN + "0/" + Arena.getArena(event.getLine(1)).getPlayers());
 				}
 			}
 		}
@@ -44,15 +44,25 @@ public class SignListener implements Listener
 
 				if(s.getLine(0).trim().equals(ICCTF.prefix.substring(0, ICCTF.prefix.length() - 2).trim()))
 				{
-					String line1 = s.getLine(1);
-					Lobby l;
-
-					if(!Lobby.isLobby(line1))
-						l = new Lobby(line1);
+					if(!Lobby.isInLobby(event.getPlayer()))
+					{
+						String line1 = s.getLine(1);
+						Lobby l;
+	
+						if(!Lobby.isLobby(line1))
+							l = new Lobby(line1);
+						else
+							l = Lobby.getLobby(line1);
+						
+						l.addPlayer(event.getPlayer());
+					}
 					else
-						l = Lobby.getLobby(line1);
-					
-					l.addPlayer(event.getPlayer());
+					{
+						if(s.getLine(1).equals("leave"))
+							ICCTF.i().getServer().dispatchCommand(event.getPlayer(), "ctf leave");
+						else
+							event.getPlayer().sendMessage(ICCTF.prefix + "You are already in a lobby. Type " + ChatColor.AQUA + "/ctf leave" + ChatColor.WHITE + " (or click the correspoding sign) to leave it.");
+					}
 				}
 			}
 		}

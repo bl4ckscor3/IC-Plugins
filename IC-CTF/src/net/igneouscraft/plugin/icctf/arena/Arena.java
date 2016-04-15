@@ -190,12 +190,7 @@ public class Arena
 
 		return null;
 	}
-	
-	public void add()
-	{
-		
-	}
-	
+
 	/**
 	 * Gets the maximum of players the given arena can be joined by
 	 * @param name The name of the arena

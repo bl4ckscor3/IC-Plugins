@@ -1,8 +1,5 @@
 package net.igneouscraft.plugin.icctf.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -13,14 +10,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import net.igneouscraft.plugin.icctf.Data;
 import net.igneouscraft.plugin.icctf.ICCTF;
 import net.igneouscraft.plugin.icctf.arena.Arena;
 import net.igneouscraft.plugin.icctf.arena.Lobby;
 
 public class SignListener implements Listener
 {
-	public static final HashMap<String,ArrayList<Sign>> signs = new HashMap<String,ArrayList<Sign>>();
-
 	@EventHandler
 	public void onSignChange(SignChangeEvent event)
 	{
@@ -37,12 +33,9 @@ public class SignListener implements Listener
 				}
 				else
 				{
-					ArrayList<Sign> al = signs.containsKey(event.getLine(1)) ? signs.get(event.getLine(1)) : new ArrayList<Sign>();
-
 					event.setLine(0, ICCTF.prefix);
 					event.setLine(3, ChatColor.GREEN + "0/" + Arena.getPlayerMaximum(event.getLine(1)));
-					al.add((Sign)event.getBlock().getState());
-					signs.put(event.getLine(1), al);
+					Data.addSign(event.getLine(1), (Sign)event.getBlock().getState());
 				}
 			}
 		}
@@ -87,10 +80,7 @@ public class SignListener implements Listener
 							return;
 						}
 
-						ArrayList<Sign> al = signs.containsKey(s.getLine(1)) ? signs.get(s.getLine(1)) : new ArrayList<Sign>();
-
-						al.add(s);
-						signs.put(s.getLine(1), al);
+						Data.addSign(s.getLine(1), s);
 						l.addPlayer(event.getPlayer());
 					}
 					else
@@ -112,8 +102,8 @@ public class SignListener implements Listener
 		{
 			Sign s = (Sign)event.getBlock().getState();
 
-			if(signs.containsKey(s.getLine(1)))
-				signs.get(s.getLine(1)).remove(s);
+			if(Data.getSigns().containsKey(s.getLine(1)))
+				Data.getSigns().get(s.getLine(1)).remove(s);
 		}
 	}
 }

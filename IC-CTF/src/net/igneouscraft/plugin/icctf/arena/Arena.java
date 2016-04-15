@@ -8,8 +8,8 @@ import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import net.igneouscraft.plugin.icctf.Data;
 import net.igneouscraft.plugin.icctf.ICCTF;
-import net.igneouscraft.plugin.icctf.listener.SignListener;
 import net.igneouscraft.plugin.icctf.util.Cuboid;
 
 /**
@@ -18,7 +18,6 @@ import net.igneouscraft.plugin.icctf.util.Cuboid;
  */
 public class Arena
 {
-	private static final ArrayList<Arena> arenas = new ArrayList<Arena>();
 	private World world;
 	private int players;
 	private String name;
@@ -81,7 +80,7 @@ public class Arena
 			}
 		}
 		
-		arenas.add(this);
+		Data.addArena(this);
 	}
 
 	/**
@@ -153,7 +152,7 @@ public class Arena
 	 */
 	public ArrayList<Sign> getSigns()
 	{
-		return SignListener.signs.get(name);
+		return Data.getSigns().get(name);
 	}
 	
 	/**
@@ -183,7 +182,7 @@ public class Arena
 	 */
 	public static Arena getArena(String name)
 	{
-		for(Arena a : arenas)
+		for(Arena a : Data.getArenas())
 		{
 			if(a.getName().equals(name))
 				return a;
@@ -192,12 +191,9 @@ public class Arena
 		return null;
 	}
 	
-	/**
-	 * @return All existing arenas
-	 */
-	public static ArrayList<Arena> getArenas()
+	public void add()
 	{
-		return arenas;
+		
 	}
 	
 	/**

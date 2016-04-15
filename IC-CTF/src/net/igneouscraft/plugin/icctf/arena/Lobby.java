@@ -10,6 +10,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import net.igneouscraft.plugin.icctf.Data;
 import net.igneouscraft.plugin.icctf.ICCTF;
 import net.igneouscraft.plugin.icctf.util.Cuboid;
 
@@ -19,7 +20,6 @@ import net.igneouscraft.plugin.icctf.util.Cuboid;
  */
 public class Lobby
 {
-	public static final ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
 	private ArrayList<String> players = new ArrayList<String>();
 	private Cuboid bounds;
 	private Location spawn;
@@ -40,7 +40,7 @@ public class Lobby
 				new Location(w, yaml.getInt("lobby.1.x"), yaml.getInt("lobby.1.y"), yaml.getInt("lobby.1.z")),
 				new Location(w, yaml.getInt("lobby.2.x"), yaml.getInt("lobby.2.y"), yaml.getInt("lobby.2.z")));
 		spawn = new Location(w, yaml.getDouble("lobby.spawn.x"), yaml.getDouble("lobby.spawn.y"), yaml.getDouble("lobby.spawn.z"));
-		lobbies.add(this);
+		Data.addLobby(this);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Lobby
 		}
 		
 		if(players.size() == 0)
-			lobbies.remove(this);
+			Data.removeLobby(this);
 
 		p.sendMessage(ICCTF.prefix + "You are no longer in the lobby.");
 	}
@@ -136,7 +136,7 @@ public class Lobby
 	 */
 	public static boolean isLobby(String lobby)
 	{
-		for(Lobby l : lobbies)
+		for(Lobby l : Data.getLobbies())
 		{
 			if(l.getArena().getName().equals(lobby))
 				return true;
@@ -151,7 +151,7 @@ public class Lobby
 	 */
 	public static Lobby getLobby(String lobby)
 	{
-		for(Lobby l : lobbies)
+		for(Lobby l : Data.getLobbies())
 		{
 			if(l.getArena().getName().equals(lobby))
 				return l;
@@ -167,7 +167,7 @@ public class Lobby
 	 */
 	public static Lobby getLobby(Player p)
 	{
-		for(Lobby l : lobbies)
+		for(Lobby l : Data.getLobbies())
 		{
 			for(String s : l.getPlayers())
 			{
@@ -186,7 +186,7 @@ public class Lobby
 	 */
 	public static boolean isInLobby(Player p)
 	{
-		for(Lobby l : lobbies)
+		for(Lobby l : Data.getLobbies())
 		{
 			for(String s : l.getPlayers())
 			{

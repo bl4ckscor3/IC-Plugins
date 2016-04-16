@@ -92,7 +92,7 @@ public class ICCTF extends JavaPlugin
 		return true;
 	}
 
-	/*---------------FOLLOWING METHODS ARE JUST TO MAKE THE COMMAND CODE MORE CLEAR---------------*/
+	/*---------------FOLLOWING METHODS ARE JUST THERE TO MAKE THE COMMAND CODE MORE CLEAR---------------*/
 	
 	/**
 	 * Defines what happens when executing /ctf continue

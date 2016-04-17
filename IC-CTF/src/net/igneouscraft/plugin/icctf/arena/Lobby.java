@@ -1,12 +1,9 @@
 package net.igneouscraft.plugin.icctf.arena;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -26,16 +23,14 @@ public class Lobby
 	private Arena arena;
 
 	/**
-	 * @param aN The name of the arena this lobby corresponds to
-	 * @param s The sign this lobby got joined from (used for updating the player values)
+	 * @param yaml The YamlConfiguration of the arena this lobby corresponds to
+	 * @param name The name of the arena
 	 */
-	public Lobby(String aN, Sign s)
+	public Lobby(YamlConfiguration yaml, String name)
 	{
-		File f = new File(ICCTF.i().getDataFolder(), "arenas/" + aN +".yml");
-		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(f);
 		World w = ICCTF.i().getServer().getWorld(yaml.getString("world"));
 
-		arena = new Arena(yaml, aN, w, s);
+		arena = new Arena(yaml, name, w);
 		bounds = new Cuboid(
 				new Location(w, yaml.getInt("lobby.1.x"), yaml.getInt("lobby.1.y"), yaml.getInt("lobby.1.z")),
 				new Location(w, yaml.getInt("lobby.2.x"), yaml.getInt("lobby.2.y"), yaml.getInt("lobby.2.z")));
@@ -84,12 +79,6 @@ public class Lobby
 		players.add(p.getName());
 		p.teleport(spawn);
 		p.sendMessage(ICCTF.prefix + "You have been teleported to the lobby. Please select your team, or let the server randomly decide for you.");
-		
-		for(Sign s : getArena().getSigns())
-		{
-			s.setLine(3, "" + ChatColor.GREEN + (Integer.parseInt(ChatColor.stripColor(s.getLine(3).split("/")[0])) + 1) + "/" + getArena().getPlayers());
-			s.update();
-		}
 	}
 	
 	/**
@@ -100,16 +89,6 @@ public class Lobby
 	{
 		players.remove(p.getName());
 		//TODO: tp player to initial location aka world spawn he was in previously
-
-		for(Sign s : getArena().getSigns())
-		{
-			s.setLine(3, "" + ChatColor.GREEN + (Integer.parseInt(ChatColor.stripColor(s.getLine(3).split("/")[0])) - 1) + "/" + getArena().getPlayers());
-			s.update();
-		}
-		
-		if(players.size() == 0)
-			Data.removeLobby(this);
-
 		p.sendMessage(ICCTF.prefix + "You are no longer in the lobby.");
 	}
 

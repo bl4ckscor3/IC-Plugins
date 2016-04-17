@@ -36,14 +36,15 @@ public class ArenaSave
 		state = AMS.ARENA1;
 		pl = ICCTF.i();
 		
-		File folder = new File(pl.getDataFolder(), "arenas");
 		File f = new File(pl.getDataFolder(), "arenas/" + n +".yml");
 		
-		if(!folder.exists())
-			folder.mkdirs();
-
 		if(!f.exists())
 			f.createNewFile();
+		else
+		{
+			f.delete();
+			f.createNewFile();
+		}
 
 		file = f;
 		yaml = YamlConfiguration.loadConfiguration(f);

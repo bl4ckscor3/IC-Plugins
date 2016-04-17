@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.igneouscraft.plugin.icctf.Data;
@@ -23,17 +22,16 @@ public class Arena
 	private String name;
 	private Cuboid arenaBounds;
 	private Cuboid blueFlagBounds;
-	private ArrayList<Location> blueSpawns;
+	private ArrayList<Location> blueSpawns = new ArrayList<Location>();
 	private Cuboid redFlagBounds;
-	private ArrayList<Location> redSpawns;
-
+	private ArrayList<Location> redSpawns = new ArrayList<Location>();
+	
 	/**
 	 * @param yaml The file this arena is saved in
 	 * @param n The name of the arena
 	 * @param w The world this arena is in
-	 * @param s The sign this lobby got joined from (used for updating the player values)
 	 */
-	public Arena(YamlConfiguration yaml, String n, World w, Sign s)
+	public Arena(YamlConfiguration yaml, String n, World w)
 	{
 		world = w;
 		players = yaml.getInt("players");
@@ -65,11 +63,6 @@ public class Arena
 		forLoop:
 		for(int i = 1; i <= 50; i++) //i don't think someone will add more than 50 spawns
 		{
-			int x = yaml.getInt("red.spawns." + i + ".x");
-
-			if(x == 0)
-				break;
-
 			try
 			{
 				redSpawns.add(new Location(w, yaml.getInt("red.spawns." + i + ".x"), yaml.getInt("red.spawns." + i + ".y"), yaml.getInt("red.spawns." + i + ".z")));
@@ -148,26 +141,13 @@ public class Arena
 	}
 
 	/**
-	 * @return All signs this arena got accessed from
-	 */
-	public ArrayList<Sign> getSigns()
-	{
-		return Data.getSigns().get(name);
-	}
-	
-	/**
 	 * Checks if an arena exists
 	 * @param name The name of the arena to check
 	 * @return
 	 */
 	public static boolean isArena(String name)
 	{
-		File folder = new File(ICCTF.i().getDataFolder(), "arenas");
-
-		if(!folder.exists())
-			folder.mkdirs();
-
-		for(File f : folder.listFiles())
+		for(File f : new File(ICCTF.i().getDataFolder(), "arenas").listFiles())
 		{
 			if(f.getName().split(".yml")[0].equals(name))
 				return true;

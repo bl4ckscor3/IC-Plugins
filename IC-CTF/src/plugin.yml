@@ -10,5 +10,5 @@ commands:
 
 permissions:
     ctf.use:
-        description: Gives acces manage arenas.
+        description: Gives acces to manage arenas and signs.
         default: op

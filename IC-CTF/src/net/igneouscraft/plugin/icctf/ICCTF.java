@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,6 +36,19 @@ public class ICCTF extends JavaPlugin
 		getConfig().addDefault("maximumPlayers", 20);
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+
+		File folder = new File(getDataFolder(), "arenas");
+
+		if(!folder.exists())
+		{
+			folder.mkdirs();
+			return;
+		}
+		
+		for(File f : folder.listFiles())
+		{
+			new Lobby(YamlConfiguration.loadConfiguration(f), f.getName().split(".yml")[0]);
+		}
 	}
 
 	@Override
@@ -51,7 +65,7 @@ public class ICCTF extends JavaPlugin
 				}
 
 				Player p = (Player)sender;
-				
+
 				if(p.hasPermission("ctf.use"))
 				{
 					if(args.length == 1) //only one argument
@@ -93,7 +107,7 @@ public class ICCTF extends JavaPlugin
 	}
 
 	/*---------------FOLLOWING METHODS ARE JUST THERE TO MAKE THE COMMAND CODE MORE CLEAR---------------*/
-	
+
 	/**
 	 * Defines what happens when executing /ctf continue
 	 * @param p The player who executed the command
@@ -136,12 +150,7 @@ public class ICCTF extends JavaPlugin
 	 */
 	private void cmdRemove(Player p, String[] args)
 	{
-		File folder = new File(getDataFolder(), "arenas");
-
-		if(!folder.exists())
-			folder.mkdirs();
-
-		for(File f : folder.listFiles())
+		for(File f : new File(getDataFolder(), "arenas").listFiles())
 		{
 			if(f.getName().split(".yml")[0].equals(args[1]))
 			{
@@ -153,7 +162,7 @@ public class ICCTF extends JavaPlugin
 
 		p.sendMessage(prefix + "There is no arena with this name.");
 	}
-	
+
 	/**
 	 * Defines what happens when executing /ctf add
 	 * @param p The player who executed the command
@@ -171,7 +180,7 @@ public class ICCTF extends JavaPlugin
 		else
 			p.sendMessage(prefix + "You are already in arena mode.");
 	}
-	
+
 	/**
 	 * Defines what happens when executing /ctf leave
 	 * @param p The player who executed the command
@@ -183,7 +192,7 @@ public class ICCTF extends JavaPlugin
 		else
 			p.sendMessage(prefix + "You are not in a lobby.");
 	}
-	
+
 	/**
 	 * Sends the help menu to a CommandSender
 	 * @param sender The instance to send the message to
@@ -196,7 +205,7 @@ public class ICCTF extends JavaPlugin
 		sender.sendMessage(prefix + ChatColor.RED + "/ctf continue" + ChatColor.WHITE + " - Allows you to continue setting up the arena after you are done setting up the spawnpoints.");
 		sender.sendMessage(prefix + "-----------------------------------");
 	}
-	
+
 	/**
 	 * @return The instance of this plugin
 	 */
